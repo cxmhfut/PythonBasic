@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 # our NN's output
+# logits: (3,3)
 logits = tf.constant([[1, 2, 3],
                       [1, 2, 3],
                       [1, 2, 3]], dtype=tf.float32)
@@ -9,8 +10,10 @@ logits = tf.constant([[1, 2, 3],
 # [[ 0.09003057  0.24472848  0.66524094]
 #  [ 0.09003057  0.24472848  0.66524094]
 #  [ 0.09003057  0.24472848  0.66524094]]
+# y: (3,3)
 y = tf.nn.softmax(logits)
 # true label
+# y_ = (3,3)
 y_ = tf.constant([[0, 0, 1],
                   [0, 0, 1],
                   [0, 0, 1]], dtype=tf.float32)
@@ -18,11 +21,13 @@ y_ = tf.constant([[0, 0, 1],
 # [[-2.40760589 -1.40760589 -0.40760601]
 # [-2.40760589 -1.40760589 -0.40760601]
 # [-2.40760589 -1.40760589 -0.40760598]]
+# y_log: (3,3)
 y_log = tf.log(y)
 # step3: do multiply
 # [[-0.         -0.         -0.40760601]
 #  [-0.         -0.         -0.40760601]
 #  [-0.         -0.         -0.40760598]]
+# pixel_wise_mult: (3,3)
 pixel_wise_mult = tf.multiply(y_, y_log)
 # step4: do cross entropy
 # 1.22282
@@ -30,9 +35,10 @@ cross_entropy = -tf.reduce_sum(pixel_wise_mult)
 # 将标签稠密化
 # [2 2 2]
 dense_y = tf.argmax(y_, 1)
-
+# [ 0.40760595  0.40760595  0.40760595]
 cross_entropy2_step1 = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=dense_y,
                                                                       logits=logits)
+# 1.22282
 cross_entropy2_step2 = tf.reduce_sum(cross_entropy2_step1)
 
 with tf.Session() as sess:
